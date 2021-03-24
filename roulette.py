@@ -52,6 +52,10 @@ class Epicycloid(Epitrochoid):
         super().__init__(R, r, r)
 
 def get_fit_function(from_box, to_box):
+    ''' Return a function transforming coordinates to center
+        a figure contained in from_box, when projecting it
+        inside to_box, so that it takes as much space as possible
+        while keeping its aspect ratio '''
     (x0_from, y0_from, x1_from, y1_from) = from_box
     (x0_to, y0_to, x1_to, y1_to) = to_box
     (w_from, h_from) = (x1_from-x0_from, y1_from-y0_from)
@@ -65,7 +69,6 @@ def get_fit_function(from_box, to_box):
         scale = h_to/h_from
         trans = (x0_to + (w_to - scale*w_from)/2, y0_to)
 
-    print(scale, trans)
     return lambda p: (trans[0] + scale*(p[0]-x0_from), trans[1] + scale*(p[1]-y0_from))
 
 def draw_cycloidal(points, pixel_size):
@@ -87,6 +90,7 @@ def draw_cycloidal(points, pixel_size):
     im.show()
 
 def parse_args():
+    ''' Basic argument parser '''
     parser = argparse.ArgumentParser(description='Playing with cycloids')
     parser.add_argument('-R', '--R',
                         help='Circle 1 radius',
@@ -98,8 +102,8 @@ def parse_args():
                         type=int)
     parser.add_argument('-d', '--d',
                         help='Distance of point from circle 2 center',
-                        default=5,
-                        type=int)
+                        default=5.0,
+                        type=float)
     parser.add_argument('-n', '--np',
                         help='number of points',
                         default=256,
@@ -122,4 +126,3 @@ if ARGS.type == "ht":
     draw_cycloidal(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
 elif ARGS.type == "et":
     draw_cycloidal(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
-
