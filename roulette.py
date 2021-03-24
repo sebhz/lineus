@@ -50,7 +50,7 @@ class Epicycloid(Epitrochoid):
     def __init__(self, R, r):
         super().__init__(R, r, r)
 
-def fit(from_box, to_box):
+def get_fit_function(from_box, to_box):
     (x0_from, y0_from, x1_from, y1_from) = from_box
     (x0_to, y0_to, x1_to, y1_to) = to_box
     (w_from, h_from) = (x1_from-x0_from, y1_from-y0_from)
@@ -62,30 +62,26 @@ def fit(from_box, to_box):
         trans = (x0_to, y0_to + (h_to - scale*h_from)/2)
     else:
         scale = h_to/h_from
-        trans = (x0_to + (w_to - scale*w_from)/2)
+        trans = (x0_to + (w_to - scale*w_from)/2, y0_to)
 
-    #return scale, trans
+    print(scale, trans)
     return lambda p: (trans[0] + scale*(p[0]-x0_from), trans[1] + scale*(p[1]-y0_from))
-
 
 def draw_cycloidal(points, pixel_size):
     ''' Draw our nice cycloid '''
     im = Image.new('RGB', (pixel_size, pixel_size), (255, 255, 255))
     draw = ImageDraw.Draw(im)
 
-    (maxx, maxy) = map(min, zip(*points))
-    (minx, miny) = map(max, zip(*points))
+    (maxx, maxy) = map(max, zip(*points))
+    (minx, miny) = map(min, zip(*points))
 
-    fit_func = fit((minx, miny, maxx, maxy), (0, 255, 0, 255))
-    #scale = pixel_size/(maxx-minx)
-    #offset = (maxx-minx)/2*scale
+    fit_func = get_fit_function((minx, miny, maxx, maxy), (0, 0, pixel_size, pixel_size))
 
-    #scale_point = lambda p: [x*scale + offset for x in p]
-    p0 = scale_point(points[0])
+    p0 = fit_func(points[0])
     porig = p0
     for p1 in points[1:]:
-        draw.line(p0 + scale_point(p1), fill=(0, 0, 0), width=2)
-        p0 = scale_point(p1)
+        draw.line(p0 + fit_func(p1), fill=(0, 0, 0), width=2)
+        p0 = fit_func(p1)
     draw.line(p0 + porig, fill=(0, 0, 0), width=2)
     im.show()
 
