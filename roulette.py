@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 ''' Simple roulette computation and visualization '''
+import argparse
 from math import pi, cos, sin
 from PIL import Image, ImageDraw
 
@@ -55,12 +56,12 @@ def get_fit_function(from_box, to_box):
     (x0_to, y0_to, x1_to, y1_to) = to_box
     (w_from, h_from) = (x1_from-x0_from, y1_from-y0_from)
     (w_to, h_to) = (x1_to-x0_to, y1_to-y0_to)
-    (a_from, a_to) = (w_from/h_from, w_to/h_to)
+    (a_from, a_to) = (abs(w_from/h_from), abs(w_to/h_to))
 
-    if a_from > a_to:
+    if a_from > a_to: # Landscape to portrait
         scale = w_to/w_from
         trans = (x0_to, y0_to + (h_to - scale*h_from)/2)
-    else:
+    else: # Portrait to landscape
         scale = h_to/h_from
         trans = (x0_to + (w_to - scale*w_from)/2, y0_to)
 
@@ -85,6 +86,40 @@ def draw_cycloidal(points, pixel_size):
     draw.line(p0 + porig, fill=(0, 0, 0), width=2)
     im.show()
 
-e = Hypotrochoid(5, 3, 5)
-v = e.compute(256)
-draw_cycloidal(v, 768)
+def parse_args():
+    parser = argparse.ArgumentParser(description='Playing with cycloids')
+    parser.add_argument('-R', '--R',
+                        help='Circle 1 radius',
+                        default=5,
+                        type=int)
+    parser.add_argument('-r', '--r',
+                        help='Circle 2 radius',
+                        default=3,
+                        type=int)
+    parser.add_argument('-d', '--d',
+                        help='Distance of point from circle 2 center',
+                        default=5,
+                        type=int)
+    parser.add_argument('-n', '--np',
+                        help='number of points',
+                        default=256,
+                        type=int)
+    parser.add_argument('-s', '--size',
+                        help='size of canvas in pixels',
+                        default=256,
+                        type=int)
+    parser.add_argument('-t', '--type',
+                        help='type of cycloid',
+                        default="ht",
+                        type=str,
+                        choices=("ht", "et"))
+    _args = parser.parse_args()
+    return _args
+
+
+ARGS = parse_args()
+if ARGS.type == "ht":
+    draw_cycloidal(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
+elif ARGS.type == "et":
+    draw_cycloidal(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
+
