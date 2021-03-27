@@ -17,8 +17,10 @@ class Cycloidal():
 
     def get_n_cusps(self):
         ''' Get number of cusps (sharp corners) '''
-        if self.R < self.r:
+        if self.d != self.r:
             return 0
+        if self.r % self.R == 0:
+            return 1
         if self.R % self.r == 0:
             return self.R/self.r
         return self.R
@@ -74,6 +76,10 @@ class DrawEngine():
         ''' Draw a line between p0 and p1 or between the current position and p0 '''
         raise NotImplementedError
 
+    def set_pos(self, p):
+        ''' Set current pen position '''
+        raise NotImplementedError
+
     def show(self):
         ''' Display the drawing '''
 
@@ -109,7 +115,6 @@ class LineUsDrawEngine(DrawEngine):
     ''' Drawing engine based on Lineus python library '''
     LINEUS_HIGH_Z = 1000
     LINEUS_LOW_Z = 400
-    LINEUS_DEFAULT_POS = (1000, 1000, 1000)
     LINEUS_CANVAS = (650, -1000, 1775, 1000)
 
     def __init__(self, bounds=None):
@@ -142,7 +147,7 @@ class LineUsDrawEngine(DrawEngine):
 
     def reset_position(self):
         ''' Moves lineus back to its reset position '''
-        self.move(self.LINEUS_DEFAULT_POS)
+        self.lineus.send_gcode('G28')
 
     def draw_line(self, p0, p1=None):
         ''' Draw a line between p0 and p1 or between the current position and p0 '''
@@ -153,6 +158,16 @@ class LineUsDrawEngine(DrawEngine):
             self.move(p0)
             self.lower_stylus()
             self.move(p1)
+
+    def start_recording(self, slot):
+        ''' Start move recording in the requested memory slot '''
+        if not isinstance(slot, int) or slot < 1 or slot > 32:
+            raise Exception("Incorrect slot number (must be int between 1 and 32)")
+        self.lineus.send_gcode('M28', 'S'+str(slot))
+
+    def stop_recording(self):
+        ''' Stop recording - save file '''
+        self.lineus.send_gcode('M29')
 
 def fit_func_factory(from_box, to_box):
     ''' Return a function transforming coordinates to center
