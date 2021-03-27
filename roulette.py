@@ -51,7 +51,29 @@ class Epicycloid(Epitrochoid):
     def __init__(self, R, r):
         super().__init__(R, r, r)
 
-def get_fit_function(from_box, to_box):
+class DrawEngine():
+    ''' Drawing engine base class '''
+    def draw_line(p0, p1):
+        raise NotImplementedError
+
+    def show():
+        raise NotImplementedError
+
+class PilDrawEngine(DrawEngine):
+    def __init__(self, canvas_box):
+        self.canvas_box = canvas_box
+        self.im = Image.new('RGB', (abs(canvas_box[1]-canvas_box[0]),\
+                                    abs(canvas_box[3]-canvas_box[2])),
+                            (255, 255, 255))
+        self.draw = ImageDraw.Draw(self.im)
+
+    def draw_line(self, p0, p1):
+        self.draw.line(p0 + p1, fill=(0, 0, 0))
+
+    def show(self):
+        self.im.show()
+
+def fit_func_factory(from_box, to_box):
     ''' Return a function transforming coordinates to center
         a figure contained in from_box, when projecting it
         inside to_box, so that it takes as much space as possible
@@ -76,21 +98,20 @@ def get_fit_function(from_box, to_box):
 
 def draw_cycloidal(points, pixel_size):
     ''' Draw our nice cycloid '''
-    im = Image.new('RGB', (pixel_size, pixel_size), (255, 255, 255))
-    draw = ImageDraw.Draw(im)
+    draw_engine = PilDrawEngine((0, pixel_size, 0, pixel_size))
 
     (maxx, maxy) = map(max, zip(*points))
     (minx, miny) = map(min, zip(*points))
 
-    fit_func = get_fit_function((minx, miny, maxx, maxy), (0, pixel_size, pixel_size, 0))
+    fit_func = fit_func_factory((minx, miny, maxx, maxy), (0, pixel_size, pixel_size, 0))
 
     p0 = fit_func(points[0])
     porig = p0
     for p1 in points[1:]:
-        draw.line(p0 + fit_func(p1), fill=(0, 0, 0))
+        draw_engine.draw_line(p0, fit_func(p1))
         p0 = fit_func(p1)
-    draw.line(p0 + porig, fill=(0, 0, 0))
-    im.show()
+    draw_engine.draw_line(p0, porig)
+    draw_engine.show()
 
 def parse_args():
     ''' Basic argument parser '''
