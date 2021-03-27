@@ -116,7 +116,7 @@ class LineUsDrawEngine(DrawEngine):
         from lineus import LineUs
         self.lineus = LineUs()
         if not self.lineus.connect():
-            raise Exception("Can't connect to LineUs")
+            raise Exception("Can't connect to Line-us")
 
     def raise_stylus(self):
         ''' Raise lineus head '''
