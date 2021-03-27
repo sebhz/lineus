@@ -1,8 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 ''' Simple roulette computation and visualization '''
 import argparse
 from math import pi, cos, sin, copysign
-from PIL import Image, ImageDraw
 
 class Cycloidal():
     ''' Main class for our cycloids '''
@@ -53,25 +52,89 @@ class Epicycloid(Epitrochoid):
 
 class DrawEngine():
     ''' Drawing engine base class '''
-    def draw_line(p0, p1):
+    def draw_line(self, p0, p1=None):
+        ''' Draw a line between p0 and p1 or between the current position and p0 '''
         raise NotImplementedError
 
-    def show():
-        raise NotImplementedError
+    def show(self):
+        ''' Display the drawing '''
 
 class PilDrawEngine(DrawEngine):
+    ''' Drawing engine based on Python Image Library '''
     def __init__(self, canvas_box):
+        from PIL import Image, ImageDraw
         self.canvas_box = canvas_box
         self.im = Image.new('RGB', (abs(canvas_box[1]-canvas_box[0]),\
                                     abs(canvas_box[3]-canvas_box[2])),
                             (255, 255, 255))
         self.draw = ImageDraw.Draw(self.im)
+        self.pos = (canvas_box[0], canvas_box[2])
 
-    def draw_line(self, p0, p1):
-        self.draw.line(p0 + p1, fill=(0, 0, 0))
+    def set_pos(self, p):
+        ''' Set current position '''
+        self.pos = p
+
+    def draw_line(self, p0, p1=None):
+        ''' Draw a line between p0 and p1 or between the current position and p0 '''
+        if p1 is None:
+            self.draw.line(self.pos + p0, fill=(0, 0, 0))
+            self.pos = p0
+        else:
+            self.draw.line(p0 + p1, fill=(0, 0, 0))
+            self.pos = p1
 
     def show(self):
+        ''' Show our canvas '''
         self.im.show()
+
+class LineUsDrawEngine(DrawEngine):
+    ''' Drawing engine based on Lineus python library '''
+    LINEUS_HIGH_Z = 1000
+    LINEUS_LOW_Z = 400
+    LINEUS_DEFAULT_POS = (1000, 1000, 1000)
+    LINEUS_CANVAS = (650, -1000, 1775, 1000)
+
+    def __init__(self, bounds=None):
+        from lineus import LineUs
+        self.lineus = LineUs()
+        if not self.lineus.connect():
+            raise Exception("Can't connect to LineUs")
+
+    def raise_stylus(self):
+        ''' Raise lineus head '''
+        self.lineus.g01(z=self.LINEUS_HIGH_Z)
+
+    def lower_stylus(self):
+        ''' lower lineus head '''
+        self.lineus.g01(z=self.LINEUS_LOW_Z)
+
+    def move(self, p):
+        ''' Move lineus head in x, y plane. This might trace
+            something or not, if the stylus is up or down '''
+        # Round coordinates - seems the API has issues with
+        # at least coordinates between -1 and 1
+        s_p = [round(x, 0) for x in p]
+        self.lineus.g01(*s_p)
+
+    def set_pos(self, p):
+        ''' Raise style, move head, lower stylus '''
+        self.raise_stylus()
+        self.move(p)
+        self.lower_stylus()
+
+    def reset_position(self):
+        ''' Moves lineus back to its reset position '''
+        self.move(self.LINEUS_DEFAULT_POS)
+
+    def draw_line(self, p0, p1=None):
+        ''' Draw a line between p0 and p1 or between the current position and p0 '''
+        if p1 is None:
+            self.move(p0)
+        else:
+            self.raise_stylus()
+            self.move(p0)
+            self.lower_stylus()
+            self.move(p1)
 
 def fit_func_factory(from_box, to_box):
     ''' Return a function transforming coordinates to center
@@ -96,21 +159,28 @@ def fit_func_factory(from_box, to_box):
 
     return lambda p: (trans[0] + xscale*(p[0]-x0_from), trans[1] + yscale*(p[1]-y0_from))
 
-def draw_cycloidal(points, pixel_size):
+def draw_cycloidal(points, pixel_size, engine):
     ''' Draw our nice cycloid '''
-    draw_engine = PilDrawEngine((0, pixel_size, 0, pixel_size))
+    engine_params = {"pil" : { \
+                              'bounds' : (0, pixel_size, pixel_size, 0), \
+                              'eng' : PilDrawEngine},
+                     "lineus" : {'bounds' : LineUsDrawEngine.LINEUS_CANVAS, \
+                              'eng' : LineUsDrawEngine}
+                    }
+
+    engine_param = engine_params[engine]
+    draw_engine = engine_param['eng'](engine_param['bounds'])
 
     (maxx, maxy) = map(max, zip(*points))
     (minx, miny) = map(min, zip(*points))
 
-    fit_func = fit_func_factory((minx, miny, maxx, maxy), (0, pixel_size, pixel_size, 0))
+    fit_func = fit_func_factory((minx, miny, maxx, maxy), engine_param['bounds'])
 
     p0 = fit_func(points[0])
-    porig = p0
-    for p1 in points[1:]:
-        draw_engine.draw_line(p0, fit_func(p1))
-        p0 = fit_func(p1)
-    draw_engine.draw_line(p0, porig)
+    draw_engine.set_pos(p0)
+    for p in points[1:]:
+        draw_engine.draw_line(fit_func(p))
+    draw_engine.draw_line(p0)
     draw_engine.show()
 
 def parse_args():
@@ -141,12 +211,16 @@ def parse_args():
                         default="ht",
                         type=str,
                         choices=("ht", "et"))
+    parser.add_argument('-e', '--engine',
+                        help='Drawing engine',
+                        default="pil",
+                        type=str,
+                        choices=("pil", "lineus"))
     _args = parser.parse_args()
     return _args
 
-
 ARGS = parse_args()
 if ARGS.type == "ht":
-    draw_cycloidal(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
+    draw_cycloidal(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size, ARGS.engine)
 elif ARGS.type == "et":
-    draw_cycloidal(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size)
+    draw_cycloidal(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), ARGS.size, ARGS.engine)
