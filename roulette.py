@@ -15,6 +15,22 @@ class Cycloidal():
         self.d = d
         self.k = R/r
 
+    def get_n_cusps(self):
+        ''' Get number of cusps (sharp corners) '''
+        if self.R < self.r:
+            return 0
+        if self.R % self.r == 0:
+            return self.R/self.r
+        return self.R
+
+    def get_n_rotations(self):
+        ''' Get number of rotations of the outer circle '''
+        if self.R % self.r == 0:
+            return 1
+        if self.r % self.R == 0:
+            return self.r/self.R
+        return self.r
+
     def compute(self, nstep):
         ''' Returns nstep points corresponding to nstep evenly
             spaced angular steps '''
@@ -24,18 +40,20 @@ class Hypotrochoid(Cycloidal):
     ''' Hypotrochoid '''
     def compute(self, nstep):
         points = list()
+        n_rot = self.get_n_rotations()
         for i in range(nstep):
-            theta = 2*pi*self.r*i/nstep
+            theta = 2*pi*n_rot*i/nstep
             points.append((self.r*(self.k-1)*cos(theta) + self.d*cos((self.k-1)*theta), \
                            self.r*(self.k-1)*sin(theta) - self.d*sin((self.k-1)*theta),))
         return points
 
 class Epitrochoid(Cycloidal):
-    ''' Epitrochoids '''
+    ''' Epitrochoid '''
     def compute(self, nstep):
         points = list()
+        n_rot = self.get_n_rotations()
         for i in range(nstep):
-            theta = 2*pi*self.r*i/nstep
+            theta = 2*pi*n_rot*i/nstep
             points.append((self.r*(self.k+1)*cos(theta) - self.d*cos((self.k+1)*theta), \
                            self.r*(self.k+1)*sin(theta) - self.d*sin((self.k+1)*theta),))
         return points
