@@ -74,32 +74,32 @@ class Epicycloid(Epitrochoid):
 def parse_args():
     ''' Basic argument parser '''
     parser = argparse.ArgumentParser(description='Playing with cycloids')
-    parser.add_argument('-R', '--R',
+    parser.add_argument('-R',
                         help='Circle 1 radius',
                         default=5,
                         type=int)
-    parser.add_argument('-r', '--r',
+    parser.add_argument('-r',
                         help='Circle 2 radius',
                         default=3,
                         type=int)
-    parser.add_argument('-d', '--d',
+    parser.add_argument('-d',
                         help='Distance of point from circle 2 center',
                         default=5.0,
                         type=float)
-    parser.add_argument('-n', '--np',
+    parser.add_argument('-p',
                         help='number of points',
                         default=256,
                         type=int)
-    parser.add_argument('-s', '--size',
+    parser.add_argument('-s',
                         help='size of PIL square canvas side, in pixels',
                         default=256,
                         type=int)
-    parser.add_argument('-t', '--type',
+    parser.add_argument('-t',
                         help='type of cycloid',
                         default="ht",
                         type=str,
                         choices=("ht", "et"))
-    parser.add_argument('-e', '--engine',
+    parser.add_argument('-e',
                         help='Drawing engine',
                         default="pil",
                         type=str,
@@ -108,12 +108,12 @@ def parse_args():
     return _args
 
 ARGS = parse_args()
-CANVAS = (0, ARGS.size, ARGS.size, 0)
-if ARGS.type == "ht":
-    drawing_engine.draw_continuous(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), \
+CANVAS = (0, ARGS.s, ARGS.s, 0)
+if ARGS.t == "ht":
+    drawing_engine.draw_continuous(Hypotrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.p), \
                                    CANVAS, \
-                                   ARGS.engine)
-elif ARGS.type == "et":
-    drawing_engine.draw_continuous(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.np), \
+                                   ARGS.e)
+elif ARGS.t == "et":
+    drawing_engine.draw_continuous(Epitrochoid(ARGS.R, ARGS.r, ARGS.d).compute(ARGS.p), \
                                    CANVAS, \
-                                   ARGS.engine)
+                                   ARGS.e)

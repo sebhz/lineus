@@ -39,23 +39,23 @@ class Rose():
 def parse_args():
     ''' Basic argument parser '''
     parser = argparse.ArgumentParser(description='Playing with rhodoneas (roses)')
-    parser.add_argument('-n', '--n',
+    parser.add_argument('-n',
                         help='n parameter (k=n/d)',
                         default=5,
                         type=int)
-    parser.add_argument('-d', '--d',
+    parser.add_argument('-d',
                         help='d parameter (k=n/d)',
                         default=3,
                         type=int)
-    parser.add_argument('-p', '--p',
+    parser.add_argument('-p',
                         help='number of points',
                         default=256,
                         type=int)
-    parser.add_argument('-s', '--size',
+    parser.add_argument('-s',
                         help='size of PIL square canvas side, in pixels',
                         default=256,
                         type=int)
-    parser.add_argument('-e', '--engine',
+    parser.add_argument('-e',
                         help='Drawing engine',
                         default="pil",
                         type=str,
@@ -64,7 +64,7 @@ def parse_args():
     return _args
 
 ARGS = parse_args()
-CANVAS = (0, ARGS.size, ARGS.size, 0)
+CANVAS = (0, ARGS.s, ARGS.s, 0)
 drawing_engine.draw_continuous(Rose(ARGS.n, ARGS.d).compute(ARGS.p), \
                                CANVAS, \
-                               ARGS.engine)
+                               ARGS.e)
