@@ -11,8 +11,8 @@ class Lissajous():
             raise TypeError("n must be an integer")
         if not isinstance(b, int):
             raise TypeError("d must be an integer")
-        if phi < 0 or phi > 1:
-            raise ValueError("phi must be in [0;1]")
+        if phi < -0.5 or phi > 0.5:
+            raise ValueError("phi must be in [-0.5;0.5]")
 
         while (a % 2 == 0) and (b % 2 == 0):
             a = a/2
@@ -25,9 +25,9 @@ class Lissajous():
     def compute(self, nstep):
         ''' Compute Lissajous points '''
         points = list()
+        phase = pi*self.phi
         for i in range(nstep):
             theta = 2*pi*i/nstep
-            phase = pi*self.phi
             points.append((sin(self.a*theta+phase), sin(self.b*theta),))
         return points
 

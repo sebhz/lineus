@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 ''' Rhodonea curves (roses) '''
 import argparse
-from math import pi, cos, sin
+from math import pi, sin
 import drawing_engine
 
 class Rose():
@@ -27,7 +27,7 @@ class Rose():
         return self.d
 
     def compute(self, nstep):
-        ''' Conpute rose points '''
+        ''' Compute rose points '''
         points = list()
         n_rot = self.get_n_rotations()
         k = self.n/self.d
