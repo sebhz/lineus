@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+""" Calibration of the low position of Lineus """
 import drawing_engine
 
 de = drawing_engine.LineUsDrawEngine()
