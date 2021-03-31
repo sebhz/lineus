@@ -46,10 +46,10 @@ class PilDrawEngine(DrawEngine):
 class LineUsDrawEngine(DrawEngine):
     ''' Drawing engine based on Lineus python library '''
     LINEUS_HIGH_Z = 1000
-    LINEUS_LOW_Z = 400
+    LINEUS_LOW_Z = 200
     LINEUS_CANVAS = (650, -1000, 1775, 1000)
 
-    def __init__(self, bounds=None):
+    def __init__(self, bounds=LINEUS_CANVAS):
         from lineus import LineUs
         self.lineus = LineUs()
         if not self.lineus.connect():

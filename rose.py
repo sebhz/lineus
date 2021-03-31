@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 ''' Rhodonea curves (roses) '''
 import argparse
-from math import pi, sin
+from math import pi, sin, cos
 import drawing_engine
 
 class Rose():
