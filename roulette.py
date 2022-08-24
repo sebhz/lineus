@@ -46,7 +46,7 @@ class Hypotrochoid(Cycloidal):
     """Hypotrochoid"""
 
     def compute(self, nstep):
-        points = list()
+        points = []
         n_rot = self.get_n_rotations()
         for i in range(nstep):
             theta = 2 * pi * n_rot * i / nstep
@@ -65,7 +65,7 @@ class Epitrochoid(Cycloidal):
     """Epitrochoid"""
 
     def compute(self, nstep):
-        points = list()
+        points = []
         n_rot = self.get_n_rotations()
         for i in range(nstep):
             theta = 2 * pi * n_rot * i / nstep

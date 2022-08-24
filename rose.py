@@ -22,21 +22,39 @@ class Rose:
 
     def get_n_rotations(self):
         """Get number of rotations needed to complete the rose"""
+        # k is an integer. If even, one full rotation is enough. If odd
+        # one half is enough
         if self.n % self.d == 0:
-            return self.n / self.d
-        if (self.n % 2 == 1) and (self.d % 2 == 1):
-            return self.d / 2
+            k = self.n / self.d
+            if k % 2 == 0:
+                return 1
+            return 0.5
+
+        # k is a rational. If both n and d are odd, we need d/2 rotations.
+        # else we need d rotations
+        g = gcd(self.n, self.d)
+        n = self.n / g
+        d = self.d / g
+        if (n % 2 == 1) and (d % 2 == 1):
+            return d / 2
         return self.d
 
     def compute(self, nstep):
         """Compute rose points"""
-        points = list()
+        points = []
         n_rot = self.get_n_rotations()
         k = self.n / self.d
         for i in range(nstep):
             theta = 2 * pi * n_rot * i / nstep
             points.append((cos(k * theta) * cos(theta), cos(k * theta) * sin(theta)))
         return points
+
+
+def gcd(x, y):
+    """Compute GCD of x and y using Euclide's algo"""
+    while y:
+        x, y = y, x % y
+    return abs(x)
 
 
 def parse_args():
