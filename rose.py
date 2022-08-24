@@ -13,12 +13,10 @@ class Rose:
             raise TypeError("n must be an integer")
         if not isinstance(d, int):
             raise TypeError("d must be an integer")
-        while (n % 2 == 0) and (d % 2 == 0):
-            n = n / 2
-            d = d / 2
+        g = gcd(n, d)
 
-        self.n = n
-        self.d = d
+        self.n = n / g
+        self.d = d / g
 
     def get_n_rotations(self):
         """Get number of rotations needed to complete the rose"""
@@ -32,11 +30,8 @@ class Rose:
 
         # k is a rational. If both n and d are odd, we need d/2 rotations.
         # else we need d rotations
-        g = gcd(self.n, self.d)
-        n = self.n / g
-        d = self.d / g
-        if (n % 2 == 1) and (d % 2 == 1):
-            return d / 2
+        if (self.n % 2 == 1) and (self.d % 2 == 1):
+            return self.d / 2
         return self.d
 
     def compute(self, nstep):
