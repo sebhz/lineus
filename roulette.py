@@ -6,7 +6,7 @@ import drawing_engine
 
 
 class Cycloidal:
-    """ Main class for our cycloids """
+    """Main class for our cycloids"""
 
     def __init__(self, R, r, d):
         if not isinstance(R, int):
@@ -19,7 +19,7 @@ class Cycloidal:
         self.k = R / r
 
     def get_n_cusps(self):
-        """ Get number of cusps (sharp corners) """
+        """Get number of cusps (sharp corners)"""
         if self.d != self.r:
             return 0
         if self.r % self.R == 0:
@@ -29,7 +29,7 @@ class Cycloidal:
         return self.R
 
     def get_n_rotations(self):
-        """ Get number of rotations of the outer circle """
+        """Get number of rotations of the outer circle"""
         if self.R % self.r == 0:
             return 1
         if self.r % self.R == 0:
@@ -37,13 +37,13 @@ class Cycloidal:
         return self.r
 
     def compute(self, nstep):
-        """ Returns nstep points corresponding to nstep evenly
-            spaced angular steps """
+        """Returns nstep points corresponding to nstep evenly
+        spaced angular steps"""
         raise NotImplementedError
 
 
 class Hypotrochoid(Cycloidal):
-    """ Hypotrochoid """
+    """Hypotrochoid"""
 
     def compute(self, nstep):
         points = list()
@@ -62,7 +62,7 @@ class Hypotrochoid(Cycloidal):
 
 
 class Epitrochoid(Cycloidal):
-    """ Epitrochoid """
+    """Epitrochoid"""
 
     def compute(self, nstep):
         points = list()
@@ -81,21 +81,21 @@ class Epitrochoid(Cycloidal):
 
 
 class Hypocycloid(Hypotrochoid):
-    """ Hypocycloid = hypotrochoid with d = r """
+    """Hypocycloid = hypotrochoid with d = r"""
 
     def __init__(self, R, r):
         super().__init__(R, r, r)
 
 
 class Epicycloid(Epitrochoid):
-    """ Epicycloid = epitrochoid with d = r """
+    """Epicycloid = epitrochoid with d = r"""
 
     def __init__(self, R, r):
         super().__init__(R, r, r)
 
 
 def parse_args():
-    """ Basic argument parser """
+    """Basic argument parser"""
     parser = argparse.ArgumentParser(description="Playing with cycloids")
     parser.add_argument("-R", help="Circle 1 radius", default=5, type=int)
     parser.add_argument("-r", help="Circle 2 radius", default=3, type=int)

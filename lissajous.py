@@ -6,7 +6,7 @@ import drawing_engine
 
 
 class Lissajous:
-    """ Describe a Lissajous curve """
+    """Describe a Lissajous curve"""
 
     def __init__(self, a, b, phi):
         if not isinstance(a, int):
@@ -25,7 +25,7 @@ class Lissajous:
         self.phi = phi
 
     def compute(self, nstep):
-        """ Compute Lissajous points """
+        """Compute Lissajous points"""
         points = list()
         phase = pi * self.phi
         for i in range(nstep):
@@ -35,8 +35,8 @@ class Lissajous:
 
 
 def parse_args():
-    """ Basic argument parser """
-    parser = argparse.ArgumentParser(description="Playing with rhodoneas (roses)")
+    """Basic argument parser"""
+    parser = argparse.ArgumentParser(description="Playing Lissajous figure")
     parser.add_argument("-a", help="a parameter", default=5, type=int)
     parser.add_argument("-b", help="b parameter", default=3, type=int)
     parser.add_argument("-P", help="phase parameter", default=0.5, type=float)

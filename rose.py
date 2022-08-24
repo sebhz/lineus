@@ -6,7 +6,7 @@ import drawing_engine
 
 
 class Rose:
-    """ Describe a rose """
+    """Describe a rose"""
 
     def __init__(self, n, d):
         if not isinstance(n, int):
@@ -21,7 +21,7 @@ class Rose:
         self.d = d
 
     def get_n_rotations(self):
-        """ Get number of rotations needed to complete the rose """
+        """Get number of rotations needed to complete the rose"""
         if self.n % self.d == 0:
             return self.n / self.d
         if (self.n % 2 == 1) and (self.d % 2 == 1):
@@ -29,7 +29,7 @@ class Rose:
         return self.d
 
     def compute(self, nstep):
-        """ Compute rose points """
+        """Compute rose points"""
         points = list()
         n_rot = self.get_n_rotations()
         k = self.n / self.d
@@ -40,7 +40,7 @@ class Rose:
 
 
 def parse_args():
-    """ Basic argument parser """
+    """Basic argument parser"""
     parser = argparse.ArgumentParser(description="Playing with rhodoneas (roses)")
     parser.add_argument("-n", help="n parameter (k=n/d)", default=5, type=int)
     parser.add_argument("-d", help="d parameter (k=n/d)", default=3, type=int)
