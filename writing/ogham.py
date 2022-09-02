@@ -419,7 +419,8 @@ def parse_args():
 
 ARGS = parse_args()
 if ARGS.e == "pil":
-    CANVAS = (0, ARGS.w, ARGS.H, 0)
+    # Reverse Y axis as Pil has it increasing downward
+    CANVAS = (0, ARGS.H, ARGS.w, 0)
     draw_engine = drawing_engine.PilDrawEngine(CANVAS)
 else:
     CANVAS = draw_engine.LineUsDrawEngine.LINEUS_CANVAS

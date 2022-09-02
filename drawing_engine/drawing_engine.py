@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ Lineus and PIL drawing engine """
 from math import copysign
+import sys
 
 
 class DrawEngine:
@@ -21,17 +22,18 @@ class DrawEngine:
 class PilDrawEngine(DrawEngine):
     """Drawing engine based on Python Image Library"""
 
-    def __init__(self, canvas_box):
+    def __init__(self, bounds):
+        """bounds is the canvas boundsing box: (x0, y0, x1, y1) format"""
         from PIL import Image, ImageDraw
 
-        self.canvas_box = canvas_box
+        self.bounds = bounds
         self.im = Image.new(
             "RGB",
-            (abs(canvas_box[1] - canvas_box[0]), abs(canvas_box[3] - canvas_box[2])),
+            (abs(bounds[2] - bounds[0]), abs(bounds[3] - bounds[1])),
             (255, 255, 255),
         )
         self.draw = ImageDraw.Draw(self.im)
-        self.pos = (canvas_box[0], canvas_box[2])
+        self.pos = (bounds[0], bounds[1])
 
     def set_pos(self, p):
         """Set current position"""
@@ -62,6 +64,7 @@ class LineUsDrawEngine(DrawEngine):
         from lineus import LineUs
 
         self.lineus = LineUs()
+        self.bounds = bounds
         if not self.lineus.connect():
             raise Exception("Can't connect to Line-us")
 
@@ -146,14 +149,17 @@ def draw_continuous(points, canvas, engine):
         "pil": {"bounds": canvas, "eng": PilDrawEngine},
         "lineus": {"bounds": LineUsDrawEngine.LINEUS_CANVAS, "eng": LineUsDrawEngine},
     }
-
-    engine_param = engine_params[engine]
-    draw_engine = engine_param["eng"](engine_param["bounds"])
+    engine_param = engine_params.get(engine)
+    try:
+        draw_engine = engine_param["eng"](engine_param["bounds"])
+    except TypeError:
+        print("Invalid drawing engine passed. Exiting", file=sys.stderr)
+        sys.exit(-1)
 
     (maxx, maxy) = map(max, zip(*points))
     (minx, miny) = map(min, zip(*points))
 
-    fit_func = fit_func_factory((minx, miny, maxx, maxy), engine_param["bounds"])
+    fit_func = fit_func_factory((minx, miny, maxx, maxy), draw_engine.bounds)
 
     p0 = fit_func(points[0])
     draw_engine.set_pos(p0)
