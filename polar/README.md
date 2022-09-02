@@ -1,4 +1,4 @@
-# Fun with the [line-us](https://www.line-us.com/) drawing robot
+# Polar curve drawing
 
 Drawing some simple polar curves with line-us.
 

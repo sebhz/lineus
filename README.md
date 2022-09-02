@@ -1,4 +1,4 @@
-# Fun with the lineus robot
+# Fun with the [line-us](https://www.line-us.com/) drawing robot
 
 Draw interesting things with the line-us robot.
 Also implements a crude drawing engine to previsualize the results using PIL.
