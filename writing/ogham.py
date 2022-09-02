@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Writing in Ogham"""
 import math
-import sys
 import argparse
 import drawing_engine
 
@@ -22,253 +21,188 @@ M_Y = math.tan(ANG * math.pi / 180.0)
 # x ascending right and y ascending up.
 # strokes instructions are for ogham in vertical position
 OGHAM_REF = {
-    "beith": {"values": ("B"), "strokes": (("M", 0, 0), ("T", 1, 0))},
+    "beith": {"values": ("B"), "strokes": ((0, 0, 1, 0),)},
     "luis": {
         "values": ("L"),
-        "strokes": (("M", 0, 0), ("T", 1, 0), ("M", 0, ILN), ("T", 1, ILN)),
+        "strokes": ((0, 0, 1, 0), (0, ILN, 1, ILN)),
     },
     "fearn": {
         "values": ("F"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", 1, 0),
-            ("M", 0, ILN),
-            ("T", 1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", 1, 2 * ILN),
+            (0, 0, 1, 0),
+            (0, ILN, 1, ILN),
+            (0, 2 * ILN, 1, 2 * ILN),
         ),
     },
     "saille": {
         "values": ("S"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", 1, 0),
-            ("M", 0, ILN),
-            ("T", 1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", 1, 3 * ILN),
+            (0, 0, 1, 0),
+            (0, ILN, 1, ILN),
+            (0, 2 * ILN, 1, 2 * ILN),
+            (0, 3 * ILN, 1, 3 * ILN),
         ),
     },
     "nuin": {
         "values": ("N"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", 1, 0),
-            ("M", 0, ILN),
-            ("T", 1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", 1, 3 * ILN),
-            ("M", 0, 4 * ILN),
-            ("T", 1, 4 * ILN),
+            (0, 0, 1, 0),
+            (0, ILN, 1, ILN),
+            (0, 2 * ILN, 1, 2 * ILN),
+            (0, 3 * ILN, 1, 3 * ILN),
+            (0, 4 * ILN, 1, 4 * ILN),
         ),
     },
-    "uath": {"values": ("H"), "strokes": (("M", 0, 0), ("T", -1, 0))},
+    "uath": {"values": ("H"), "strokes": ((0, 0, -1, 0),)},
     "duir": {
         "values": ("D"),
-        "strokes": (("M", 0, 0), ("T", -1, 0), ("M", 0, ILN), ("T", -1, ILN)),
+        "strokes": ((0, 0, -1, 0), (0, ILN, -1, ILN)),
     },
     "tinne": {
         "values": ("T"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", -1, 0),
-            ("M", 0, ILN),
-            ("T", -1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", -1, 2 * ILN),
+            (0, 0, -1, 0),
+            (0, ILN, -1, ILN),
+            (0, 2 * ILN, -1, 2 * ILN),
         ),
     },
     "coll": {
         "values": ("C", "K"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", -1, 0),
-            ("M", 0, ILN),
-            ("T", -1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", -1, 2 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", -1, 3 * ILN),
+            (0, 0, -1, 0),
+            (0, ILN, -1, ILN),
+            (0, 2 * ILN, -1, 2 * ILN),
+            (0, 3 * ILN, -1, 3 * ILN),
         ),
     },
     "ceirt": {
         "values": ("Q"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", -1, 0),
-            ("M", 0, ILN),
-            ("T", -1, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", -1, 2 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", -1, 3 * ILN),
-            ("M", 0, 4 * ILN),
-            ("T", -1, 4 * ILN),
+            (0, 0, -1, 0),
+            (0, ILN, -1, ILN),
+            (0, 2 * ILN, -1, 2 * ILN),
+            (0, 3 * ILN, -1, 3 * ILN),
+            (0, 4 * ILN, -1, 4 * ILN),
         ),
     },
-    "muin": {"values": ("M"), "strokes": (("M", -1, 2 * M_Y), ("T", 1, 0))},
+    "muin": {"values": ("M"), "strokes": ((-1, 2 * M_Y, 1, 0))},
     "gort": {
         "values": ("G"),
         "strokes": (
-            ("M", -1, 2 * M_Y),
-            ("T", 1, 0),
-            ("M", -1, 2 * M_Y + ILN),
-            ("T", 1, ILN),
+            (-1, 2 * M_Y, 1, 0),
+            (-1, 2 * M_Y + ILN, 1, ILN),
         ),
     },
     "ngeadal": {
         "values": ("NG"),
         "strokes": (
-            ("M", -1, 2 * M_Y),
-            ("T", 1, 0),
-            ("M", -1, 2 * M_Y + ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * M_Y + 2 * ILN),
-            ("T", 1, 2 * ILN),
+            (-1, 2 * M_Y, 1, 0),
+            (-1, 2 * M_Y + ILN, 1, ILN),
+            (-1, 2 * M_Y + 2 * ILN, 1, 2 * ILN),
         ),
     },
     "straif": {
         "values": ("Z"),
         "strokes": (
-            ("M", -1, 2 * M_Y),
-            ("T", 1, 0),
-            ("M", -1, 2 * M_Y + ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * M_Y + 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", -1, 2 * M_Y + 3 * ILN),
-            ("T", 1, 3 * ILN),
+            (-1, 2 * M_Y, 1, 0),
+            (-1, 2 * M_Y + ILN, 1, ILN),
+            (-1, 2 * M_Y + 2 * ILN, 1, 2 * ILN),
+            (-1, 2 * M_Y + 3 * ILN, 1, 3 * ILN),
         ),
     },
     "ruis": {
         "values": ("R"),
         "strokes": (
-            ("M", -1, 2 * M_Y),
-            ("T", 1, 0),
-            ("M", -1, 2 * M_Y + ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * M_Y + 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", -1, 2 * M_Y + 3 * ILN),
-            ("T", 1, 3 * ILN),
-            ("M", -1, 2 * M_Y + 4 * ILN),
-            ("T", 1, 4 * ILN),
+            (-1, 2 * M_Y, 1, 0),
+            (-1, 2 * M_Y + ILN, 1, ILN),
+            (-1, 2 * M_Y + 2 * ILN, 1, 2 * ILN),
+            (-1, 2 * M_Y + 3 * ILN, 1, 3 * ILN),
+            (-1, 2 * M_Y + 4 * ILN, 1, 4 * ILN),
         ),
     },
-    "ailm": {"values": ("A"), "strokes": (("M", -1, 0), ("T", 1, 0))},
+    "ailm": {"values": ("A"), "strokes": ((-1, 0, 1, 0),)},
     "onn": {
         "values": ("O"),
-        "strokes": (("M", -1, 0), ("T", 1, 0), ("M", -1, ILN), ("T", 1, ILN)),
+        "strokes": ((-1, 0, 1, 0), (-1, ILN, 1, ILN)),
     },
     "ur": {
         "values": ("U"),
         "strokes": (
-            ("M", -1, 0),
-            ("T", 1, 0),
-            ("M", -1, ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * ILN),
-            ("T", 1, 2 * ILN),
+            (-1, 0, 1, 0),
+            (-1, ILN, 1, ILN),
+            (-1, 2 * ILN, 1, 2 * ILN),
         ),
     },
     "edad": {
         "values": ("E"),
         "strokes": (
-            ("M", -1, 0),
-            ("T", 1, 0),
-            ("M", -1, ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", -1, 3 * ILN),
-            ("T", 1, 3 * ILN),
+            (-1, 0, 1, 0),
+            (-1, ILN, 1, ILN),
+            (-1, 2 * ILN, 1, 2 * ILN),
+            (-1, 3 * ILN, 1, 3 * ILN),
         ),
     },
     "idad": {
         "values": ("I"),
         "strokes": (
-            ("M", -1, 0),
-            ("T", 1, 0),
-            ("M", -1, ILN),
-            ("T", 1, ILN),
-            ("M", -1, 2 * ILN),
-            ("T", 1, 2 * ILN),
-            ("M", -1, 3 * ILN),
-            ("T", 1, 3 * ILN),
-            ("M", -1, 4 * ILN),
-            ("T", 1, 4 * ILN),
+            (-1, 0, 1, 0),
+            (-1, ILN, 1, ILN),
+            (-1, 2 * ILN, 1, 2 * ILN),
+            (-1, 3 * ILN, 1, 3 * ILN),
+            (-1, 4 * ILN, 1, 4 * ILN),
         ),
     },
     "ebad": {
         "values": ("EA", "K", "EO"),
         "strokes": (
-            ("M", -1, 0),
-            ("T", 1, 3 * ILN),
-            ("M", -1, 3 * ILN),
-            ("T", 1, 0),
+            (-1, 0, 1, 3 * ILN),
+            (-1, 3 * ILN, 1, 0),
         ),
     },
     "or": {
         "values": ("O", "OI", "OE"),
         "strokes": (
-            ("M", -1, 1.5 * ILN),
-            ("T", 0, 3 * ILN),
-            ("T", 1, 1.5 * ILN),
-            ("T", 0, 0),
-            ("T", -1, 1.5 * ILN),
+            (-1, 1.5 * ILN, 0, 3 * ILN),
+            (1, 1.5 * ILN),
+            (0, 0),
+            (-1, 1.5 * ILN),
         ),
     },
     "uillean": {
         "value": ("UI", "UA"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", 0.5, 0),
-            ("T", 0.5, 4 * ILN),
-            ("T", 0.25, 4 * ILN),
-            ("T", 0.25, ILN),
+            (0, 0, 0.5, 0),
+            (0.5, 4 * ILN),
+            (0.25, 4 * ILN),
+            (0.25, ILN),
         ),
     },
     "pin": {
         "values": ("P", "IO", "IA"),
         "strokes": (
-            ("M", 0, 0),
-            ("T", 1, 2 * ILN),
-            ("M", 0, ILN),
-            ("T", 1, 3 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", 1, 0),
-            ("M", 0, 4 * ILN),
-            ("T", 1, ILN),
+            (0, 0, 1, 2 * ILN),
+            (0, ILN, 1, 3 * ILN),
+            (0, 3 * ILN, 1, 0),
+            (0, 4 * ILN, 1, ILN),
         ),
     },
     "emancholl": {
         "values": ("X", "CH", "AE"),
         "strokes": (
-            ("M", 0, ILN),
-            ("T", -4 * ILN, ILN),
-            ("M", 0, 2 * ILN),
-            ("T", -4 * ILN, 2 * ILN),
-            ("M", 0, 3 * ILN),
-            ("T", -4 * ILN, 3 * ILN),
-            ("M", -ILN, 0),
-            ("T", -ILN, 4 * ILN),
-            ("M", -2 * ILN, 0),
-            ("T", -2 * ILN, 4 * ILN),
-            ("M", -3 * ILN, 0),
-            ("T", -3 * ILN, 4 * ILN),
+            (0, ILN, -4 * ILN, ILN),
+            (0, 2 * ILN, -4 * ILN, 2 * ILN),
+            (0, 3 * ILN, -4 * ILN, 3 * ILN),
+            (-ILN, 0, -ILN, 4 * ILN),
+            (-2 * ILN, 0, -2 * ILN, 4 * ILN),
+            (-3 * ILN, 0, -3 * ILN, 4 * ILN),
         ),
     },
     "peith": {
         "values": ("P"),
-        "strokes": (("M", 0.5, 0), ("T", 0.5, 2 * ILN)),
+        "strokes": ((0.5, 0, 0.5, 2 * ILN),),
     },
 }
 
-# TODO - finish the table
 
 VALUES = {
     "A": "ailm",
@@ -300,44 +234,45 @@ VALUES = {
 }
 
 
-def trace_strokes(strokes, offset, fit_func, draw_engine):
+def trace_strokes(strokes, offset, fit_func, d_e):
     """Trace a stroke"""
     for stroke in strokes:
-        point = fit_func(
+        point0 = fit_func(
             (
-                stroke[1] + offset[0],
-                stroke[2] + offset[1],
+                stroke[0] + offset[0],
+                stroke[1] + offset[1],
             )
         )
-        if stroke[0] == "M":
-            draw_engine.set_pos(point)
+        if len(stroke) == 2:
+            d_e.draw_line(point0)
         else:
-            draw_engine.draw_line(point)
+            point1 = fit_func(
+                (
+                    stroke[2] + offset[0],
+                    stroke[3] + offset[1],
+                )
+            )
+            d_e.draw_line(point0, point1)
 
 
-def trace_sentence(sentence, canvas, draw_engine, margin=0.05):
+def trace_sentence(sentence, canvas, d_e, margin=0.05):
     """Trace a sentence"""
     b_box = get_sentence_binding_box(sentence, margin)
     fit_func = drawing_engine.fit_func_factory(b_box, canvas)
-    x = b_box[2] / 2.0  # Our letter strokes are centered
-    y = b_box[3] * margin / 2.0
+    x_c = b_box[2] / 2.0  # Our letter strokes are centered
+    y_c = b_box[3] * margin / 2.0
 
     end_line_y = b_box[3] * (1 - margin / 2.0) - IOG
     # Draw center line and markers
     strokes = (
-        ("M", x, y + IOG),
-        ("T", x, end_line_y),
-        ("M", x, y + IOG),
-        ("T", x - IOG / 2, y),
-        ("M", x, y + IOG),
-        ("T", x + IOG / 2, y),
-        ("M", x, end_line_y),
-        ("T", x - IOG / 2, end_line_y + IOG),
-        ("M", x, end_line_y),
-        ("T", x + IOG / 2, end_line_y + IOG),
+        (x_c, y_c + IOG, x_c, end_line_y),
+        (x_c, y_c + IOG, x_c - IOG / 2, y_c),
+        (x_c, y_c + IOG, x_c + IOG / 2, y_c),
+        (x_c, end_line_y, x_c - IOG / 2, end_line_y + IOG),
+        (x_c, end_line_y, x_c + IOG / 2, end_line_y + IOG),
     )
     trace_strokes(strokes, (0, 0), fit_func, draw_engine)
-    y += 2 * IOG
+    y_c += 2 * IOG
 
     # Now draw the characters
     for word in sentence.split():
@@ -345,10 +280,12 @@ def trace_sentence(sentence, canvas, draw_engine, margin=0.05):
             glyph = VALUES.get(letter)
             if not glyph in OGHAM_REF:
                 continue
-            trace_strokes(OGHAM_REF[glyph]["strokes"], (x, y), fit_func, draw_engine)
-            y += IOG + get_letter_height(letter)
+            trace_strokes(
+                OGHAM_REF[glyph]["strokes"], (x_c, y_c), fit_func, draw_engine
+            )
+            y_c += IOG + get_letter_height(letter)
 
-    draw_engine.show()
+    d_e.show()
 
 
 def get_letter_height(letter):
@@ -357,7 +294,12 @@ def get_letter_height(letter):
     glyph = VALUES.get(letter.upper())
     if not glyph in OGHAM_REF:
         return 0
-    return max([_[2] for _ in OGHAM_REF[glyph]["strokes"]])
+    y_s = []
+    for stroke in OGHAM_REF[glyph]["strokes"]:
+        y_s.append(stroke[1])
+        if len(stroke) == 4:
+            y_s.append(stroke[3])
+    return max(y_s)
 
 
 def get_word_height(word):
@@ -379,26 +321,29 @@ def get_sentence_binding_box(sentence, margin=0.05):
     margin is the percentage to be added on all sides
     Ogham are written vertically, so add all height but
     take the max of all width"""
-    w, h = 0, 0
+    width, height = 0, 0
     for word in sentence.split():
-        w = max(w, get_word_width(word))
-        h += get_word_height(word)
-        h += IOG  # Add a space between words
-    h -= IOG
+        width = max(width, get_word_width(word))
+        height += get_word_height(word)
+        height += IOG  # Add a space between words
+    height -= IOG
     # Now add two spaces on top and bottom for the start and end markers
-    h += 4 * IOG
+    height += 4 * IOG
     # And add the margin
-    w *= 1 + margin
-    h *= 1 + margin
-    return (0, 0, w, h)
+    width *= 1 + margin
+    height *= 1 + margin
+    return (0, 0, width, height)
+
 
 def sanitize_sentence(sentence):
+    """Remove all unknow character from input"""
     txt = ""
     for letter in sentence:
-        if letter != " " and letter.upper() not in VALUES:
+        if letter.upper() not in VALUES:
             continue
         txt += letter
     return txt
+
 
 def parse_args():
     """Basic argument parser"""
@@ -423,7 +368,7 @@ if ARGS.e == "pil":
     CANVAS = (0, ARGS.H, ARGS.w, 0)
     draw_engine = drawing_engine.PilDrawEngine(CANVAS)
 else:
-    CANVAS = draw_engine.LineUsDrawEngine.LINEUS_CANVAS
+    CANVAS = drawing_engine.LineUsDrawEngine.LINEUS_CANVAS
     draw_engine = drawing_engine.LineUsDrawEngine(CANVAS)
 
 TXT = sanitize_sentence(ARGS.text)
