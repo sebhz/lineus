@@ -236,22 +236,18 @@ VALUES = {
 
 def trace_strokes(strokes, offset, fit_func, d_e):
     """Trace a stroke"""
-    for stroke in strokes:
-        point0 = fit_func(
-            (
-                stroke[0] + offset[0],
-                stroke[1] + offset[1],
-            )
+    f_f = lambda x, y: fit_func(
+        (
+            x + offset[0],
+            y + offset[1],
         )
+    )
+    for stroke in strokes:
+        point0 = f_f(stroke[0], stroke[1])
         if len(stroke) == 2:
             d_e.draw_line(point0)
         else:
-            point1 = fit_func(
-                (
-                    stroke[2] + offset[0],
-                    stroke[3] + offset[1],
-                )
-            )
+            point1 = f_f(stroke[2], stroke[3])
             d_e.draw_line(point0, point1)
 
 
@@ -271,7 +267,7 @@ def trace_sentence(sentence, canvas, d_e, margin=0.05):
         (x_c, end_line_y, x_c - IOG / 2, end_line_y + IOG),
         (x_c, end_line_y, x_c + IOG / 2, end_line_y + IOG),
     )
-    trace_strokes(strokes, (0, 0), fit_func, draw_engine)
+    trace_strokes(strokes, (0, 0), fit_func, d_e)
     y_c += 2 * IOG
 
     # Now draw the characters
@@ -280,9 +276,7 @@ def trace_sentence(sentence, canvas, d_e, margin=0.05):
             glyph = VALUES.get(letter)
             if not glyph in OGHAM_REF:
                 continue
-            trace_strokes(
-                OGHAM_REF[glyph]["strokes"], (x_c, y_c), fit_func, draw_engine
-            )
+            trace_strokes(OGHAM_REF[glyph]["strokes"], (x_c, y_c), fit_func, d_e)
             y_c += IOG + get_letter_height(letter)
 
     d_e.show()
@@ -336,7 +330,7 @@ def get_sentence_binding_box(sentence, margin=0.05):
 
 
 def sanitize_sentence(sentence):
-    """Remove all unknow character from input"""
+    """Remove all unknown characters from input"""
     txt = ""
     for letter in sentence:
         if letter.upper() not in VALUES:
