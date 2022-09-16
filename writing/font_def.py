@@ -42,14 +42,11 @@ class Glyph:
 class Font:
     """A Font: set of glyphs"""
 
-    def __init__(self, name, g_space, glyphs=None):
+    def __init__(self, name, g_space, glyphs):
         """Initialize font"""
-        if glyphs is None:
-            glyphs = []
         self.name = name
         self.g_space = g_space
         self.glyph_index = {}  # From glyph name to glyph
-        self.glyph_value = {}  # Must be populated by subclass
         self.create_font_indexes(glyphs)
 
     def create_font_indexes(self, glyphs):
@@ -57,8 +54,9 @@ class Font:
         for glyph in glyphs:
             self.glyph_index[glyph.name] = glyph
 
-    def create_glyph_value_map(self, map_desc):
+    def set_glyph_value_map(self, map_desc):
         """Create a dict value -> Glyph object"""
+        self.glyph_value = {}
         for values, name in map_desc.items():
             for value in values:
                 self.glyph_value[value] = self.get_glyph_by_name(name)

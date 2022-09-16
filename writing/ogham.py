@@ -191,41 +191,38 @@ class Ogham(Font):
             ((0, 0.5, 2 * ILN, 0.5),),
         ),
     ]
-    DEFAULT_MAP_DESC = {
-        ("a", "A"): "ailm",
-        ("b", "B"): "beith",
-        ("c", "C", "k", "K"): "coll",
-        ("d", "D"): "duir",
-        ("e", "E"): "edad",
-        ("f", "F"): "fearn",
-        ("g", "G"): "gort",
-        ("h", "H"): "uath",
-        ("i", "I"): "idad",
-        ("l", "L"): "luis",
-        ("m", "M"): "muin",
-        ("o", "O"): "onn",
-        ("p", "P"): "peith",
-        ("q", "Q"): "ceirt",
-        ("n", "N"): "nuin",
-        ("r", "R"): "ruis",
-        ("s", "S"): "saille",
-        ("t", "T"): "tinne",
-        ("u", "U"): "ur",
-        ("z", "Z"): "straif",
-        ("ng", "NG"): "ngeadal",
-        ("EA", "EO", "ea", "eo"): "ebad",
-        ("OI", "OE", "oi", "oe"): "or",
-        ("UI", "UA", "ui", "ua"): "uillean",
-        ("IO", "IA", "io", "ia"): "pin",
-        ("X", "CH", "AE", "x", "ch", "ae"): "emancholl",
-    }
 
-    def __init__(self, map_desc=None):
+    def __init__(self):
         super().__init__("ogham", IOG, self.GLYPHS)
-        if map_desc is None:
-            self.create_glyph_value_map(self.DEFAULT_MAP_DESC)
-        else:
-            self.create_glyph_value_map(map_desc)
 
+
+OGHAM_MAP_DESC = {
+    ("a", "A"): "ailm",
+    ("b", "B"): "beith",
+    ("c", "C", "k", "K"): "coll",
+    ("d", "D"): "duir",
+    ("e", "E"): "edad",
+    ("f", "F"): "fearn",
+    ("g", "G"): "gort",
+    ("h", "H"): "uath",
+    ("i", "I"): "idad",
+    ("l", "L"): "luis",
+    ("m", "M"): "muin",
+    ("o", "O"): "onn",
+    ("p", "P"): "peith",
+    ("q", "Q"): "ceirt",
+    ("n", "N"): "nuin",
+    ("r", "R"): "ruis",
+    ("s", "S"): "saille",
+    ("t", "T"): "tinne",
+    ("u", "U"): "ur",
+    ("z", "Z"): "straif",
+    ("ng", "NG"): "ngeadal",
+    ("EA", "EO", "ea", "eo"): "ebad",
+    ("OI", "OE", "oi", "oe"): "or",
+    ("UI", "UA", "ui", "ua"): "uillean",
+    ("IO", "IA", "io", "ia"): "pin",
+    ("X", "CH", "AE", "x", "ch", "ae"): "emancholl",
+}
 
 font = Ogham()

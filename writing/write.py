@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Writing in strokes"""
 import argparse
+import sys
 import drawing_engine
 import ogham
+import cirth
 
 
 def draw_ogham_base(b_box, fit_func, d_e, margin=0.05):
@@ -84,8 +86,12 @@ def get_sentence_binding_box(sentence, margin=0.05):
 def sanitize_sentence(sentence):
     """Remove all unknown characters from input"""
     txt = ""
+    unknown_letters = set()
     for letter in sentence:
         if not FONT.is_value_mapped(letter):
+            if letter not in unknown_letters:
+                print(letter, "is not in the chosen font. Ignoring it.", file=sys.stderr)
+                unknown_letters.add(letter)
             continue
         txt += letter
     return txt
@@ -94,7 +100,20 @@ def sanitize_sentence(sentence):
 def get_font(font_name):
     """Return the font object referenced by name"""
     if font_name == "ogham":
-        return ogham.font
+        f = ogham.font
+        f.set_glyph_value_map(ogham.OGHAM_MAP_DESC)
+        return f
+    if "cirth" in font_name:
+        f = cirth.font
+        if font_name == "cirth":
+            f.set_glyph_value_map(cirth.CERTHAS_DAERON_MAP_DESC)
+        if font_name == "cirth-d":
+            f.set_glyph_value_map(cirth.ANGERTHAS_DAERON_MAP_DESC)
+        if font_name == "cirth-m":
+            f.set_glyph_value_map(cirth.ANGERTHAS_MORIA_MAP_DESC)
+        if font_name == "cirth-e":
+            f.set_glyph_value_map(cirth.ANGERTHAS_EREBOR_MAP_DESC)
+        return f
     return None
 
 
@@ -129,7 +148,7 @@ def parse_args():
         help="Font to use",
         default="ogham",
         type=str,
-        choices=("ogham",),
+        choices=("ogham", "cirth", "cirth-d", "cirth-m", "cirth-e"),
     )
     parser.add_argument("text", help="Text to translate", type=str)
     _args = parser.parse_args()
