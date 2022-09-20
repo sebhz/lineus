@@ -71,14 +71,23 @@ def get_text_binding_box(glyph_seq, margin=0.05):
 
 def glyphize_text(text):
     """Get a text, and returns a corresponding list of glyph.
-    Unknown glyphs are ignored"""
-    glyph_list = list()
+    Unknown glyphs are ignored.
+    Try and map diphtongs and triphtongs in a crude way. Will
+    mostly work for simple cases"""
+    glyph_list = []
     unknown_letters = set()
-    for letter in text:
-        if not FONT.is_value_mapped(letter):
-            unknown_letters.add(letter)
-            continue
-        glyph_list.append(FONT.get_glyph_by_value(letter))
+    text_i = 0
+    while text_i < len(text):
+        for _i in range(3, 0, -1):  # Check all triph/diphtongue + single char
+            phtong = text[text_i : text_i + _i]
+            if FONT.is_value_mapped(phtong):
+                glyph_list.append(FONT.get_glyph_by_value(phtong))
+                text_i += _i
+                break
+            if _i == 1:  # Single letter not found
+                unknown_letters.add(phtong)
+                text_i += 1
+
     if unknown_letters != set():
         print(
             "Following letters are not in the chosen font. Ignoring them:",
