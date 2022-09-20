@@ -46,7 +46,8 @@ class Font:
         """Initialize font"""
         self.name = name
         self.g_space = g_space
-        self.glyph_index = {}  # From glyph name to glyph
+        self.glyph_index = {} # From glyph name to glyph
+        self.glyph_value = {} # From glyph value to glyph
         self.create_font_indexes(glyphs)
 
     def create_font_indexes(self, glyphs):

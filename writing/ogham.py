@@ -225,4 +225,4 @@ OGHAM_MAP_DESC = {
     ("X", "CH", "AE", "x", "ch", "ae"): "emancholl",
 }
 
-font = Ogham()
+FONT = Ogham()

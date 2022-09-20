@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Definition of cirth stroke font"""
-import math
 from font_def import Font, Glyph
 
 
@@ -144,8 +143,9 @@ class Cirth(Font):
 # "The Certhas Daeron was originally designed to represent the sounds of Sindarin only.
 # The oldest cirth were Nos 1, 2, 5, 6, 8, 9, 12; 18, 19, 22; 31, 35, 36; 39, 42, 46, 50
 # and a certh varying between 13 and 15.
-# The assignment of values was unsystematic. Nos 39, 42, 46, 50 were vowels and remained so in
-# all later developments. Nos 13, 15 were used for h or s according as 35 was used for s and h."
+# The assignment of values was unsystematic. Nos 39, 42, 46, 50 were vowels and remained
+# so in all later developments. Nos 13, 15 were used for h or s according as 35 was used
+# for s and h."
 #
 # We arbitrarily assign 35 to s and 13 to h. 15 is unused.
 # We also added 49 for "a", as it is a sound used in Sindarin.
@@ -270,7 +270,7 @@ ANGERTHAS_MORIA_MAP_DESC = {
     ("g", "G"): "19",
     ("kh", "KH"): "20",
     ("gh", "GH"): "21",
-    ("n", "N"): "22", # Confused with 53 ?
+    ("n", "N"): "22",  # Confused with 53 ?
     ("kw", "KW"): "23",
     ("gw", "GW"): "24",
     ("khw", "KHW"): "25",
@@ -329,7 +329,7 @@ ANGERTHAS_EREBOR_MAP_DESC = {
     ("ks", "KS", "x", "X"): "17",
     ("k", "K"): "18",
     ("kh", "KH"): "20",
-    ("n", "N"): "22", # Confused with 53 ?
+    ("n", "N"): "22",  # Confused with 53 ?
     ("kw", "KW"): "23",
     ("gw", "GW"): "24",
     ("khw", "KHW"): "25",
@@ -359,4 +359,4 @@ ANGERTHAS_EREBOR_MAP_DESC = {
     ("s", "S"): "54",
 }
 
-font = Cirth()
+FONT = Cirth()

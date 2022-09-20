@@ -31,9 +31,9 @@ def trace_strokes(strokes, offset, fit_func, d_e):
             d_e.draw_line(point0, point1)
 
 
-def trace_sentence(sentence, canvas, d_e, margin=0.05):
-    """Trace a sentence"""
-    b_box = get_sentence_binding_box(sentence, margin)
+def trace_text(glyph_seq, canvas, d_e, margin=0.05):
+    """Trace a text"""
+    b_box = get_text_binding_box(glyph_seq, margin)
     fit_func = drawing_engine.fit_func_factory(b_box, canvas)
     x_c, y_c = (b_box[2] - b_box[0]) * margin / 2, (b_box[3] - b_box[1]) * margin / 2
     space = FONT.get_glyph_spacing()
@@ -41,40 +41,26 @@ def trace_sentence(sentence, canvas, d_e, margin=0.05):
         draw_ogham_base(b_box, fit_func, d_e, margin)
 
     # Now draw the characters
-    for word in sentence.split():
-        for letter in word:
-            glyph = FONT.get_glyph_by_value(letter)
-            if glyph is None:
-                continue
-            trace_strokes(glyph.get_strokes(), (x_c, y_c), fit_func, d_e)
-            x_c += space + glyph.get_width()
+    for glyph in glyph_seq:
+        if glyph is None:
+            continue
+        trace_strokes(glyph.get_strokes(), (x_c, y_c), fit_func, d_e)
+        x_c += space + glyph.get_width()
 
     d_e.show()
 
 
-def get_word_dimensions(word):
-    """Get the width and height of a word"""
-    width, height = 0, 0
-    space = FONT.get_glyph_spacing()
-    for letter in word:
-        glyph = FONT.get_glyph_by_value(letter)
-        if glyph is not None:
-            width += glyph.get_width()
-            height = max(height, glyph.get_height())
-            width += space
-    return width - space, height
-
-
-def get_sentence_binding_box(sentence, margin=0.05):
-    """Get the binding box of a full sentence
+def get_text_binding_box(glyph_seq, margin=0.05):
+    """Get the binding box of a sequence of glyphs
     margin is the percentage to be added on all sides.
     For now, assuming horizontal text"""
     width, height = 0, 0
     space = FONT.get_glyph_spacing()
-    for word in sentence.split():
-        _w, _h = get_word_dimensions(word)
-        height = max(height, _h)
-        width += _w + space  # Add a space between words
+    for glyph in glyph_seq:
+        if glyph is not None:
+            width += glyph.get_width()
+            height = max(height, glyph.get_height())
+            width += space
     width -= space
 
     # And add the margin
@@ -83,37 +69,42 @@ def get_sentence_binding_box(sentence, margin=0.05):
     return (0, 0, width, height)
 
 
-def sanitize_sentence(sentence):
-    """Remove all unknown characters from input"""
-    txt = ""
+def glyphize_text(text):
+    """Get a text, and returns a corresponding list of glyph.
+    Unknown glyphs are ignored"""
+    glyph_list = list()
     unknown_letters = set()
-    for letter in sentence:
+    for letter in text:
         if not FONT.is_value_mapped(letter):
-            if letter not in unknown_letters:
-                print(letter, "is not in the chosen font. Ignoring it.", file=sys.stderr)
-                unknown_letters.add(letter)
+            unknown_letters.add(letter)
             continue
-        txt += letter
-    return txt
+        glyph_list.append(FONT.get_glyph_by_value(letter))
+    if unknown_letters != set():
+        print(
+            "Following letters are not in the chosen font. Ignoring them:",
+            unknown_letters,
+            file=sys.stderr,
+        )
+    return glyph_list
 
 
 def get_font(font_name):
     """Return the font object referenced by name"""
     if font_name == "ogham":
-        f = ogham.font
-        f.set_glyph_value_map(ogham.OGHAM_MAP_DESC)
-        return f
+        _f = ogham.FONT
+        _f.set_glyph_value_map(ogham.OGHAM_MAP_DESC)
+        return _f
     if "cirth" in font_name:
-        f = cirth.font
+        _f = cirth.FONT
         if font_name == "cirth":
-            f.set_glyph_value_map(cirth.CERTHAS_DAERON_MAP_DESC)
+            _f.set_glyph_value_map(cirth.CERTHAS_DAERON_MAP_DESC)
         if font_name == "cirth-d":
-            f.set_glyph_value_map(cirth.ANGERTHAS_DAERON_MAP_DESC)
+            _f.set_glyph_value_map(cirth.ANGERTHAS_DAERON_MAP_DESC)
         if font_name == "cirth-m":
-            f.set_glyph_value_map(cirth.ANGERTHAS_MORIA_MAP_DESC)
+            _f.set_glyph_value_map(cirth.ANGERTHAS_MORIA_MAP_DESC)
         if font_name == "cirth-e":
-            f.set_glyph_value_map(cirth.ANGERTHAS_EREBOR_MAP_DESC)
-        return f
+            _f.set_glyph_value_map(cirth.ANGERTHAS_EREBOR_MAP_DESC)
+        return _f
     return None
 
 
@@ -159,11 +150,11 @@ ARGS = parse_args()
 if ARGS.engine == "pil":
     # Reverse Y axis as Pil has it increasing downward
     CANVAS = (0, ARGS.height, ARGS.width, 0)
-    draw_engine = drawing_engine.PilDrawEngine(CANVAS)
+    DRAW_ENGINE = drawing_engine.PilDrawEngine(CANVAS)
 else:
     CANVAS = drawing_engine.LineUsDrawEngine.LINEUS_CANVAS
-    draw_engine = drawing_engine.LineUsDrawEngine(CANVAS)
+    DRAW_ENGINE = drawing_engine.LineUsDrawEngine(CANVAS)
 
 FONT = get_font(ARGS.font)
-TXT = sanitize_sentence(ARGS.text)
-trace_sentence(TXT, CANVAS, draw_engine)
+GLYPH_SEQ = glyphize_text(ARGS.text)
+trace_text(GLYPH_SEQ, CANVAS, DRAW_ENGINE)
