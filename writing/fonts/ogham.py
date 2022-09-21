@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Definition of ogham stroke font"""
 import math
-from font_def import Font, Glyph
+from .font import Font, Glyph
 
 
 # The length of a bar is arbitrarily set to 1
@@ -145,16 +145,16 @@ class Ogham(Font):
             "ebad",
             (
                 (0, 2, 3 * ILN, 0),
-                (3 * ILN, 0, 0, 0),
+                (0, 0, 3 * ILN, 2),
             ),
         ),
         Glyph(
             "or",
             (
-                (1.5 * ILN, 2, 3 * ILN, 1),
-                (1.5 * ILN, 0),
+                (0, 1, 2*ILN, 2),
+                (4*ILN, 1),
+                (2*ILN, 0),
                 (0, 1),
-                (1.5 * ILN, 0),
             ),
         ),
         Glyph(
@@ -169,8 +169,8 @@ class Ogham(Font):
         Glyph(
             "pin",
             (
-                (0, 1, 2 * ILN, 0),
-                (ILN, 1, 3 * ILN, 0),
+                (0, 1, 3 * ILN, 0),
+                (ILN, 1, 4 * ILN, 0),
                 (3 * ILN, 1, 0, 0),
                 (4 * ILN, 1, ILN, 0),
             ),
@@ -217,12 +217,12 @@ OGHAM_MAP_DESC = {
     ("t", "T"): "tinne",
     ("u", "U"): "ur",
     ("z", "Z"): "straif",
-    ("ng", "NG"): "ngeadal",
-    ("EA", "EO", "ea", "eo"): "ebad",
-    ("OI", "OE", "oi", "oe"): "or",
-    ("UI", "UA", "ui", "ua"): "uillean",
-    ("IO", "IA", "io", "ia"): "pin",
-    ("X", "CH", "AE", "x", "ch", "ae"): "emancholl",
+    ("ng", "NG", "Ng"): "ngeadal",
+    ("EA", "EO", "ea", "eo", "Ea", "Eo"): "ebad",
+    ("OI", "OE", "oi", "oe", "Oi", "Oe"): "or",
+    ("UI", "UA", "ui", "ua", "Ui", "Ua"): "uillean",
+    ("IO", "IA", "io", "ia", "Io", "Ia"): "pin",
+    ("X", "CH", "AE", "x", "ch", "ae", "Ch", "Ae"): "emancholl",
 }
 
 FONT = Ogham()

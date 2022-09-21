@@ -3,8 +3,7 @@
 import argparse
 import sys
 import drawing_engine
-import ogham
-import cirth
+from fonts import cirth, ogham
 
 
 def draw_ogham_base(b_box, fit_func, d_e, margin=0.05):
